@@ -13,15 +13,17 @@ find_status_JCE_provider_Bouncy_Castle() {
 	cat <<EOF > $BUILD_DIR/$JCE_PROVIDER_BC_STATUS.java
 public class $JCE_PROVIDER_BC_STATUS {
 	public static void main(String [] args) {
-		  if (java.security.Security.getProvider("BC") == null)
+		  if (java.security.Security.getProvider("BC") == null) {
 		    System.err.println("Bouncy Castle JCE Provider is not registred");
-		  else
+				System.exit(1);
+		  } else
 		    System.err.println("Bouncy Castle JCE Provider is already registered");
 	}
 }
 EOF
 	javac $BUILD_DIR/$JCE_PROVIDER_BC_STATUS.java
 	java -cp $JCE_PROVIDER_BC_CP$BUILD_DIR $JCE_PROVIDER_BC_OPTION $JCE_PROVIDER_BC_STATUS
+	return $?
 }
 #END OF--------------------support function to find out if Bouncy Castle JCE Provider is registered---------------------------
 
@@ -31,15 +33,17 @@ find_status_JCE_unlimited_strength() {
 	cat <<EOF > $BUILD_DIR/$JCE_UNLIMITED_STRENGTH_STATUS.java
 public class $JCE_UNLIMITED_STRENGTH_STATUS {
 	public static void main(String [] args) throws Exception {
-		  if (javax.crypto.Cipher.getMaxAllowedKeyLength("RC5") < 256)
+		  if (javax.crypto.Cipher.getMaxAllowedKeyLength("RC5") < 256) {
 		    System.err.println("JCE limited strength cryptography");
-		  else
+				System.exit(1);
+			} else
 		    System.err.println("JCE unlimited strength cryptography");
 	}
 }
 EOF
 	javac $BUILD_DIR/$JCE_UNLIMITED_STRENGTH_STATUS.java
 	java -cp $BUILD_DIR $JCE_UNLIMITED_STRENGTH_STATUS
+	return $?
 }
 #END OF --------------------support function to find out if JCE unlimited strength cryptography---------------------------
 
@@ -47,4 +51,4 @@ EOF
 java -version
 find_status_JCE_unlimited_strength
 find_status_JCE_provider_Bouncy_Castle
-
+exit $?
